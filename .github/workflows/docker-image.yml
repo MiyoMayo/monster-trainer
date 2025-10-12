@@ -2,9 +2,9 @@ name: Docker Build
 
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
   pull_request:
-    branches: [ main ]
+    branches: [ master ]
 
 jobs:
   build:
@@ -19,4 +19,4 @@ jobs:
       - name: Build Docker image
         run: |
           docker build -t monster-trainer .
-          docker run --rm monster_game cargo test
+          docker run --rm monster-trainer cargo test
