@@ -1,3 +1,10 @@
+use crate::game::GameSystem;
+
+mod game;
+
 fn main() {
-    println!("Hello, world!!!");
+    if let Err(e) = GameSystem::new().run() {
+        eprintln!("{}", e);
+        std::process::exit(1);
+    }
 }
