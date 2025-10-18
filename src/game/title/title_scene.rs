@@ -1,4 +1,5 @@
 use crate::game::scene::{Scene, SceneTransition};
+use crate::game::GameContext;
 
 pub struct TitleScene {}
 
@@ -9,7 +10,7 @@ impl TitleScene {
 }
 
 impl Scene for TitleScene {
-    fn update(&mut self) -> anyhow::Result<SceneTransition> {
+    fn update(&mut self, ctx: &mut GameContext) -> anyhow::Result<SceneTransition> {
         println!("タイトル");
 
         Ok(SceneTransition::Quit)
