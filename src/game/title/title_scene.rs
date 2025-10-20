@@ -1,5 +1,7 @@
+use crate::core::input_manager::State;
 use crate::game::scene::{Scene, SceneTransition};
-use crate::game::GameContext;
+use crate::game::{GameContext, GameCore};
+use crossterm::event::KeyCode;
 
 pub struct TitleScene {}
 
@@ -10,9 +12,22 @@ impl TitleScene {
 }
 
 impl Scene for TitleScene {
-    fn update(&mut self, ctx: &mut GameContext) -> anyhow::Result<SceneTransition> {
-        println!("タイトル");
+    fn update(
+        &mut self,
+        ctx: &mut GameContext,
+        core: &GameCore,
+    ) -> anyhow::Result<SceneTransition> {
+        let e = core.input_manager.get_key_state(KeyCode::Char('a'));
+        let s = format!("タイトル : A {:?}", e);
+        crossterm::queue!(std::io::stdout(), crossterm::style::Print(s))?;
 
-        Ok(SceneTransition::Quit)
+        if matches!(
+            core.input_manager.get_key_state(KeyCode::Esc),
+            Some(State::Pressed)
+        ) {
+            return Ok(SceneTransition::Quit);
+        }
+
+        Ok(SceneTransition::Continue)
     }
 }
