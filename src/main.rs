@@ -4,7 +4,7 @@ mod core;
 mod game;
 
 fn main() {
-    if let Err(e) = GameSystem::new().run() {
+    if let Err(e) = GameSystem::new().and_then(|s| s.run()) {
         eprintln!("{}", e);
         std::process::exit(1);
     }
