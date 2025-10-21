@@ -18,8 +18,13 @@ impl Scene for TitleScene {
         core: &GameCore,
     ) -> anyhow::Result<SceneTransition> {
         let e = core.input_manager.get_key_state(KeyCode::Char('a'));
-        let s = format!("タイトル : A {:?}", e);
-        crossterm::queue!(std::io::stdout(), crossterm::style::Print(s))?;
+        let s = format!(
+            "FPS: {} / ∆: {}\nタイトル : A {:?}",
+            core.time_manager.fps(),
+            core.time_manager.delta_time(),
+            e
+        );
+        println!("{}", s);
 
         if matches!(
             core.input_manager.get_key_state(KeyCode::Esc),

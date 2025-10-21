@@ -1,10 +1,9 @@
 use crate::core::input_manager::InputManager;
+use crate::core::time::TimeManager;
 use crate::game::monster::Monster;
 use crate::game::scene::{SceneKind, SceneTransition};
 use crate::game::scene_management::SceneController;
 use std::io::Write;
-use std::thread::sleep;
-use std::time::Duration;
 
 mod enums;
 mod monster;
@@ -14,13 +13,22 @@ mod title;
 
 pub struct GameCore {
     input_manager: InputManager,
+    time_manager: TimeManager,
 }
 
 impl GameCore {
     pub fn new() -> std::io::Result<Self> {
         Ok(Self {
             input_manager: InputManager::new()?,
+            time_manager: TimeManager::new(),
         })
+    }
+
+    pub fn update(&mut self) -> std::io::Result<()> {
+        self.time_manager.update();
+        self.input_manager.update()?;
+
+        Ok(())
     }
 }
 
@@ -55,24 +63,23 @@ impl GameSystem {
     pub fn run(mut self) -> anyhow::Result<()> {
         loop {
             InputManager::clear_console()?;
+            self.game_core.update()?;
 
-            self.game_core.input_manager.update()?;
-
-            let t = self
+            let transition = self
                 .scene_controller
                 .update(&mut self.game_context, &self.game_core)?;
 
             std::io::stdout().flush()?;
 
-            match t {
+            match transition {
                 SceneTransition::Quit => return Ok(()),
-                SceneTransition::Continue => continue,
+                SceneTransition::Continue => (),
                 SceneTransition::ChangeScene(s) => {
                     self.scene_controller.change_scene(s);
                 }
             }
 
-            sleep(Duration::from_nanos(16_666_667));
+            self.game_core.time_manager.frame_sleep();
         }
     }
 }
