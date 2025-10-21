@@ -1,6 +1,6 @@
 use crate::core::input_manager::State;
 use crate::game::scene::{Scene, SceneTransition};
-use crate::game::{GameContext, GameCore};
+use crate::game::{GameContext, GameMutContext};
 use crossterm::event::KeyCode;
 
 pub struct TitleScene {}
@@ -14,20 +14,20 @@ impl TitleScene {
 impl Scene for TitleScene {
     fn update(
         &mut self,
-        ctx: &mut GameContext,
-        core: &GameCore,
+        mut_ctx: &mut GameMutContext,
+        ctx: &GameContext,
     ) -> anyhow::Result<SceneTransition> {
-        let e = core.input_manager.get_key_state(KeyCode::Char('a'));
+        let e = ctx.input_manager.get_key_state(KeyCode::Char('a'));
         let s = format!(
             "FPS: {} / ∆: {}\nタイトル : A {:?}",
-            core.time_manager.fps(),
-            core.time_manager.delta_time(),
+            ctx.time_manager.fps(),
+            ctx.time_manager.delta_time(),
             e
         );
-        println!("{}", s);
+        mut_ctx.console.println(&s);
 
         if matches!(
-            core.input_manager.get_key_state(KeyCode::Esc),
+            ctx.input_manager.get_key_state(KeyCode::Esc),
             Some(State::Pressed)
         ) {
             return Ok(SceneTransition::Quit);
