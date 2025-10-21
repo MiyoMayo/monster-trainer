@@ -18,13 +18,12 @@ impl Scene for TitleScene {
         ctx: &GameContext,
     ) -> anyhow::Result<SceneTransition> {
         let e = ctx.input_manager.get_key_state(KeyCode::Char('a'));
-        let s = format!(
-            "FPS: {} / ∆: {}\nタイトル : A {:?}",
+        mut_ctx.console.println(format!(
+            "FPS: {} / ∆: {}",
             ctx.time_manager.fps(),
-            ctx.time_manager.delta_time(),
-            e
-        );
-        mut_ctx.console.println(&s);
+            ctx.time_manager.delta_time()
+        ));
+        mut_ctx.console.println(format!("タイトル: A {:?}", e));
 
         if matches!(
             ctx.input_manager.get_key_state(KeyCode::Esc),

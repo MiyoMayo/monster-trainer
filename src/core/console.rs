@@ -27,7 +27,7 @@ impl Console {
 
     /// 1行出力する
     /// 本当はバッファに追加しているだけ
-    pub fn println<T: Display>(&mut self, s: &T) {
+    pub fn println<T: Display>(&mut self, s: T) {
         if !self.print_buffer.is_empty() {
             self.print_buffer.push_str("\n\r");
         }
