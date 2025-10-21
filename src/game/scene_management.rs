@@ -1,6 +1,6 @@
 use crate::game::scene::{Scene, SceneKind, SceneTransition};
 use crate::game::title::title_scene::TitleScene;
-use crate::game::{GameContext, GameCore};
+use crate::game::{GameContext, GameMutContext};
 
 pub struct SceneController {
     current_scene: Box<dyn Scene>,
@@ -26,7 +26,11 @@ impl SceneController {
     }
 
     /// シーンを更新する
-    pub fn update(&mut self, ctx: &mut GameContext, core: &GameCore) -> anyhow::Result<SceneTransition> {
-        self.current_scene.update(ctx, core)
+    pub fn update(
+        &mut self,
+        mut_ctx: &mut GameMutContext,
+        ctx: &GameContext,
+    ) -> anyhow::Result<SceneTransition> {
+        self.current_scene.update(mut_ctx, ctx)
     }
 }

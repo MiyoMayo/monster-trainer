@@ -1,5 +1,5 @@
 use crossterm::event::{Event, KeyCode};
-use crossterm::{event, execute, queue, terminal};
+use crossterm::{event, execute, terminal};
 use indexmap::{IndexMap, IndexSet};
 use std::time::Duration;
 
@@ -61,15 +61,6 @@ impl InputManager {
     /// キーの入力状態を取得
     pub fn get_key_state(&self, key: KeyCode) -> Option<&State> {
         self.key_states.get(&key)
-    }
-
-    /// ターミナルをクリアする
-    pub fn clear_console() -> std::io::Result<()> {
-        queue!(
-            std::io::stdout(),
-            terminal::Clear(terminal::ClearType::All),
-            crossterm::cursor::MoveTo(0, 0)
-        )
     }
 }
 

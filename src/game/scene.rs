@@ -1,4 +1,4 @@
-use crate::game::{GameContext, GameCore};
+use crate::game::{GameContext, GameMutContext};
 
 pub enum SceneKind {
     Title,
@@ -12,5 +12,9 @@ pub enum SceneTransition {
 
 pub trait Scene {
     /// シーンの更新
-    fn update(&mut self, ctx: &mut GameContext, core: &GameCore) -> anyhow::Result<SceneTransition>;
+    fn update(
+        &mut self,
+        mut_ctx: &mut GameMutContext,
+        ctx: &GameContext,
+    ) -> anyhow::Result<SceneTransition>;
 }

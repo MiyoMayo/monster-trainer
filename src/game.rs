@@ -1,3 +1,4 @@
+use crate::core::console::Console;
 use crate::core::input_manager::InputManager;
 use crate::core::time::TimeManager;
 use crate::game::monster::Monster;
@@ -11,12 +12,12 @@ mod scene;
 mod scene_management;
 mod title;
 
-pub struct GameCore {
+pub struct GameContext {
     input_manager: InputManager,
     time_manager: TimeManager,
 }
 
-impl GameCore {
+impl GameContext {
     pub fn new() -> std::io::Result<Self> {
         Ok(Self {
             input_manager: InputManager::new()?,
@@ -32,14 +33,16 @@ impl GameCore {
     }
 }
 
-pub struct GameContext {
+pub struct GameMutContext {
     monster: Monster,
+    console: Console,
 }
 
-impl GameContext {
+impl GameMutContext {
     pub fn new() -> Self {
         Self {
             monster: Monster::new(),
+            console: Console::new(),
         }
     }
 }
@@ -47,29 +50,28 @@ impl GameContext {
 pub struct GameSystem {
     scene_controller: SceneController,
 
+    game_mut_context: GameMutContext,
     game_context: GameContext,
-    game_core: GameCore,
 }
 
 impl GameSystem {
     pub fn new() -> anyhow::Result<Self> {
         Ok(Self {
             scene_controller: SceneController::new(SceneKind::Title),
-            game_context: GameContext::new(),
-            game_core: GameCore::new()?,
+            game_mut_context: GameMutContext::new(),
+            game_context: GameContext::new()?,
         })
     }
 
     pub fn run(mut self) -> anyhow::Result<()> {
         loop {
-            InputManager::clear_console()?;
-            self.game_core.update()?;
+            self.game_context.update()?;
 
             let transition = self
                 .scene_controller
-                .update(&mut self.game_context, &self.game_core)?;
+                .update(&mut self.game_mut_context, &self.game_context)?;
 
-            std::io::stdout().flush()?;
+            self.game_mut_context.console.flush()?;
 
             match transition {
                 SceneTransition::Quit => return Ok(()),
@@ -79,7 +81,7 @@ impl GameSystem {
                 }
             }
 
-            self.game_core.time_manager.frame_sleep();
+            self.game_context.time_manager.frame_sleep();
         }
     }
 }
