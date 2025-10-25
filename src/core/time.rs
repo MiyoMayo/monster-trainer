@@ -36,9 +36,11 @@ impl TimeManager {
 
     /// FPSを調整するためにスレッドを止める
     pub fn frame_sleep(&self) {
-        let sleep_secs = FRAME_SECS - self.latest_delta_time;
-        if sleep_secs.is_sign_positive() {
-            thread::sleep(Duration::from_secs_f64(sleep_secs));
+        let elapsed = self.previous_time.elapsed();
+        let frame_duration = Duration::from_secs_f64(FRAME_SECS);
+
+        if elapsed < frame_duration {
+            thread::sleep(frame_duration - elapsed);
         }
     }
 
