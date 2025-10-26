@@ -4,7 +4,6 @@ use crate::core::time::TimeManager;
 use crate::game::monster::Monster;
 use crate::game::scene::{SceneKind, SceneTransition};
 use crate::game::scene_management::SceneController;
-use std::time::{Duration, Instant};
 
 mod enums;
 mod monster;
@@ -25,11 +24,9 @@ impl GameContext {
         })
     }
 
-    pub fn update(&mut self) -> std::io::Result<()> {
+    pub fn update(&mut self) {
         self.time_manager.update();
-        self.input_manager.update()?;
-
-        Ok(())
+        self.input_manager.update();
     }
 }
 
@@ -65,7 +62,7 @@ impl GameSystem {
 
     pub fn run(mut self) -> anyhow::Result<()> {
         loop {
-            self.game_context.update()?;
+            self.game_context.update();
 
             let transition = self
                 .scene_controller

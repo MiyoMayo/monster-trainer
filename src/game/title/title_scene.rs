@@ -1,7 +1,6 @@
-use crate::core::input_manager::State;
+use crate::core::input_manager::{KeyCode, State};
 use crate::game::scene::{Scene, SceneTransition};
 use crate::game::{GameContext, GameMutContext};
-use crossterm::event::KeyCode;
 
 pub struct TitleScene {}
 
@@ -26,7 +25,7 @@ impl Scene for TitleScene {
         mut_ctx.console.println(format!("タイトル: A {:?}", e));
 
         if matches!(
-            ctx.input_manager.get_key_state(KeyCode::Esc),
+            ctx.input_manager.get_key_state(KeyCode::Space),
             Some(State::Pressed)
         ) {
             return Ok(SceneTransition::Quit);
