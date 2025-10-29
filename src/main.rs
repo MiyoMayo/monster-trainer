@@ -1,5 +1,6 @@
 use crate::game::GameSystem;
 
+mod core;
 mod game;
 
 fn main() {
