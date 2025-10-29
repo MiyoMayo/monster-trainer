@@ -95,3 +95,41 @@ impl<T> Subject<T> {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::ops::Deref;
+    use std::sync::{Arc, Mutex};
+
+    #[test]
+    fn try_subscribe() {
+        let mut subject = Subject::new();
+        let v = Arc::new(Mutex::new(0));
+        let v_clone = Arc::clone(&v);
+        let _subscription = subject.subscribe(move |v| *v_clone.lock().unwrap() += v);
+        subject.emit(&10);
+        assert_eq!(v.lock().unwrap().deref(), &10);
+    }
+
+    #[test]
+    fn drop_subscription() {
+        let mut subject = Subject::new();
+        let v = Arc::new(Mutex::new(0));
+        let v_clone = Arc::clone(&v);
+        subject.subscribe(move |_| *v_clone.lock().unwrap() += 1);
+        subject.emit(&());
+        assert_eq!(v.lock().unwrap().deref(), &0);
+    }
+
+    #[test]
+    fn unsubscribe_subscription() {
+        let mut subject = Subject::new();
+        let v = Arc::new(Mutex::new(0));
+        let v_clone = Arc::clone(&v);
+        let mut subscription = subject.subscribe(move |_| *v_clone.lock().unwrap() += 1);
+        subscription.unsubscribe();
+        subject.emit(&());
+        assert_eq!(v.lock().unwrap().deref(), &0);
+    }
+}
