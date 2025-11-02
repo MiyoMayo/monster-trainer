@@ -1,4 +1,3 @@
-use crate::core::input_manager::{KeyCode, State};
 use crate::game::scene::{Scene, SceneTransition};
 use crate::game::{GameContext, GameMutContext};
 
@@ -16,20 +15,11 @@ impl Scene for TitleScene {
         mut_ctx: &mut GameMutContext,
         ctx: &GameContext,
     ) -> anyhow::Result<SceneTransition> {
-        let e = ctx.input_manager.get_key_state(KeyCode::Char('a'));
         mut_ctx.console.println(format!(
             "FPS: {} / ∆: {}",
             ctx.time_manager.fps(),
             ctx.time_manager.delta_time()
         ));
-        mut_ctx.console.println(format!("タイトル: A {:?}", e));
-
-        if matches!(
-            ctx.input_manager.get_key_state(KeyCode::Space),
-            Some(State::Pressed)
-        ) {
-            return Ok(SceneTransition::Quit);
-        }
 
         Ok(SceneTransition::Continue)
     }
