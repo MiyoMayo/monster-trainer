@@ -1,8 +1,5 @@
 use crate::core::rx::{Observable, Subject, Subscription};
-use crossterm::event::{
-    Event, KeyCode, KeyEventKind, KeyboardEnhancementFlags, PopKeyboardEnhancementFlags,
-    PushKeyboardEnhancementFlags,
-};
+use crossterm::event::{Event, KeyCode, KeyEventKind};
 use crossterm::{event, execute, terminal};
 use indexmap::IndexMap;
 use std::time::Duration;
@@ -24,8 +21,8 @@ impl InputEvent {
 
     /// 入力状態を更新する
     pub fn update(&mut self) -> std::io::Result<()> {
-        if event::poll(Duration::from_millis(0))? {
-            while let Event::Key(key) = event::read()? {
+        while event::poll(Duration::from_millis(0))? {
+            if let Event::Key(key) = event::read()? {
                 if key.kind != KeyEventKind::Press {
                     continue;
                 }
@@ -55,24 +52,14 @@ impl InputEvent {
         let mut stdout = std::io::stdout();
         execute!(stdout, terminal::EnterAlternateScreen)?;
         terminal::enable_raw_mode()?;
-        type Kbd = KeyboardEnhancementFlags;
-        // kitty拡張を有効にして対応ターミナルの操作性を向上させる
-        execute!(
-            stdout,
-            PushKeyboardEnhancementFlags(
-                Kbd::DISAMBIGUATE_ESCAPE_CODES
-                    | Kbd::REPORT_ALL_KEYS_AS_ESCAPE_CODES
-                    | Kbd::REPORT_EVENT_TYPES
-            )
-        )?;
 
         Ok(())
     }
 
     fn finalize() {
-        execute!(std::io::stdout(), PopKeyboardEnhancementFlags).unwrap();
+        let mut stdout = std::io::stdout();
         terminal::disable_raw_mode().unwrap();
-        execute!(std::io::stdout(), terminal::LeaveAlternateScreen).unwrap();
+        execute!(stdout, terminal::LeaveAlternateScreen).unwrap();
     }
 }
 

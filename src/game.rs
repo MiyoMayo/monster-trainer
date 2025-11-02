@@ -5,6 +5,9 @@ use crate::game::monster::Monster;
 use crate::game::scene::{SceneKind, SceneTransition};
 use crate::game::scene_management::SceneController;
 use crossterm::event::KeyCode;
+use std::ops::Deref;
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::Arc;
 
 mod enums;
 mod monster;
@@ -58,7 +61,7 @@ pub struct GameSystem {
     game_mut_context: GameMutContext,
     game_context: GameContext,
 
-    continue_game: bool,
+    continue_game: Arc<AtomicBool>,
 }
 
 impl GameSystem {
@@ -67,17 +70,18 @@ impl GameSystem {
             scene_controller: SceneController::new(SceneKind::Title),
             game_mut_context: GameMutContext::new()?,
             game_context: GameContext::new()?,
-            continue_game: true,
+            continue_game: Arc::from(AtomicBool::new(true)),
         })
     }
 
     pub fn run(mut self) -> anyhow::Result<()> {
-        let s = self
+        let c = self.continue_game.clone();
+        let _s = self
             .game_mut_context
             .input_event
-            .subscribe(KeyCode::Esc, move || self.continue_game = false);
+            .subscribe(KeyCode::Esc, move || c.store(false, Ordering::Relaxed));
 
-        while self.continue_game {
+        while self.continue_game.load(Ordering::Acquire) {
             self.game_context.update()?;
             self.game_mut_context.update()?;
 
