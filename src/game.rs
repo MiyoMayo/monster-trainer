@@ -75,12 +75,14 @@ impl GameSystem {
     }
 
     pub fn run(mut self) -> anyhow::Result<()> {
+        // Escキーで終了する処理を登録
         let c = self.continue_game.clone();
         let _s = self
             .game_mut_context
             .input_event
             .subscribe(KeyCode::Esc, move || c.store(false, Ordering::Relaxed));
 
+        // ゲームループ
         while self.continue_game.load(Ordering::Acquire) {
             self.game_context.update()?;
             self.game_mut_context.update()?;
