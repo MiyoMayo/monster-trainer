@@ -4,12 +4,14 @@ use crate::game::{GameContext, GameMutContext};
 
 pub struct SceneController {
     current_scene: Box<dyn Scene>,
+    completed_start: bool,
 }
 
 impl SceneController {
     pub fn new(kind: SceneKind) -> Self {
         Self {
             current_scene: Self::create_scene(kind),
+            completed_start: false,
         }
     }
 
@@ -31,6 +33,11 @@ impl SceneController {
         mut_ctx: &mut GameMutContext,
         ctx: &GameContext,
     ) -> anyhow::Result<SceneTransition> {
+        if !self.completed_start {
+            self.current_scene.start(mut_ctx, ctx)?;
+            self.completed_start = true;
+        }
+
         self.current_scene.update(mut_ctx, ctx)
     }
 }
