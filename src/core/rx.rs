@@ -1,4 +1,5 @@
 use indexmap::IndexMap;
+use std::any::Any;
 use std::cell::RefCell;
 use std::rc::{Rc, Weak};
 use std::sync::atomic::{AtomicU64, Ordering};
@@ -59,6 +60,21 @@ impl<T> Subscription<T> {
 impl<T> Drop for Subscription<T> {
     fn drop(&mut self) {
         self.unsubscribe();
+    }
+}
+
+/// Subscriptionの一括管理
+pub struct Subscriptions {
+    subs: Vec<Box<dyn Any>>,
+}
+
+impl Subscriptions {
+    pub fn new() -> Self {
+        Self { subs: vec![] }
+    }
+
+    pub fn add<T: 'static>(&mut self, s: Subscription<T>) {
+        self.subs.push(Box::new(s));
     }
 }
 
