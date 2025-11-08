@@ -5,12 +5,12 @@ use crate::game::monster::Monster;
 use crate::game::scene::{SceneKind, SceneTransition};
 use crate::game::scene_management::SceneController;
 use crossterm::event::KeyCode;
-use std::ops::Deref;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 
-mod enums;
+mod def;
 mod monster;
+mod name_entry;
 mod scene;
 mod scene_management;
 mod title;

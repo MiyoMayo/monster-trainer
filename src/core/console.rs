@@ -26,13 +26,17 @@ impl Console {
     }
 
     /// 1行出力する
-    /// 本当はバッファに追加しているだけ
-    pub fn println<T: Display>(&mut self, s: T) {
+    pub fn println(&mut self, s: impl AsRef<str>) {
         if !self.print_buffer.is_empty() {
-            self.print_buffer.push_str("\n\r");
+            self.new_line();
         }
 
-        self.print_buffer.push_str(format!("{}", s).as_str());
+        self.print_buffer.push_str(s.as_ref());
+    }
+
+    /// 改行する
+    pub fn new_line(&mut self) {
+        self.print_buffer.push_str("\n\r");
     }
 
     /// バッファの内容を出力する

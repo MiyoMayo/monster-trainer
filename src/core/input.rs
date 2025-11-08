@@ -7,12 +7,14 @@ use std::time::Duration;
 /// キー入力があった時にイベントを送信する
 pub struct InputEvent {
     input_subject: IndexMap<KeyCode, Subject<()>>,
+    any_input_subject: Subject<KeyCode>,
 }
 
 impl InputEvent {
     pub fn new() -> std::io::Result<Self> {
         let mut input = Self {
             input_subject: IndexMap::new(),
+            any_input_subject: Subject::new(),
         };
         input.initialize()?;
 
@@ -30,13 +32,15 @@ impl InputEvent {
                 if let Some(subject) = self.input_subject.get_mut(&key.code) {
                     subject.emit(&());
                 }
+
+                self.any_input_subject.emit(&key.code);
             }
         }
 
         Ok(())
     }
 
-    /// キー入力があった時に呼び出されるクロージャを登録する
+    /// 指定のキー入力があった時に呼び出されるクロージャを登録する
     pub fn subscribe(
         &mut self,
         key_code: KeyCode,
@@ -46,6 +50,11 @@ impl InputEvent {
             .entry(key_code)
             .or_insert(Subject::new())
             .subscribe(move |_| f())
+    }
+
+    /// キー入力があった時に呼び出されるクロージャを登録する
+    pub fn subscribe_any(&mut self, f: impl FnMut(&KeyCode) + 'static) -> Subscription<KeyCode> {
+        self.any_input_subject.subscribe(f)
     }
 
     fn initialize(&mut self) -> std::io::Result<()> {
