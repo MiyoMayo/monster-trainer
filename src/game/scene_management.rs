@@ -1,3 +1,4 @@
+use crate::game::name_entry::name_entry_scene::NameEntryScene;
 use crate::game::scene::{Scene, SceneKind, SceneTransition};
 use crate::game::title::title_scene::TitleScene;
 use crate::game::{GameContext, GameMutContext};
@@ -18,12 +19,14 @@ impl SceneController {
     /// シーンを変更する
     pub fn change_scene(&mut self, kind: SceneKind) {
         self.current_scene = Self::create_scene(kind);
+        self.completed_start = false;
     }
 
     /// シーンを作成する
     fn create_scene(kind: SceneKind) -> Box<dyn Scene> {
         match kind {
             SceneKind::Title => Box::new(TitleScene::new()),
+            SceneKind::NameEntry => Box::new(NameEntryScene::new()),
         }
     }
 

@@ -3,6 +3,7 @@ use crate::game::{GameContext, GameMutContext};
 #[derive(Debug, Copy, Clone)]
 pub enum SceneKind {
     Title,
+    NameEntry,
 }
 
 pub enum SceneTransition {
